@@ -4,61 +4,121 @@
     <meta charset="UTF-8">
     <title>TypeSnap</title>
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/script.js"></script>
+    <!-- <script src="js/script.js"></script> -->
 </head>
 <body>
-    <div class="body_wrapper">
-        <header>
-            <img src="img/logo.svg" alt="">
-            <h1>TypeSnap</h1>
-        </header>
-        <main>
-            <div class="side_wrapper">
-                <div class="side_block">
-                    <div class="side_wrapper">
-                        <input type="checkbox" name="ignore_casing" id="ignore_casing"><label for="ignore_casing" id="ignore_casing_label">Ignore Casing</label>
+    <header>
+        <h1>TypeMetrics</h1>
+    </header>
+    <main>
+        <div class="text_controls">
+            <div class="custom_check">
+                <input type="checkbox" name="ignore_casing" id="ignore_casing"><label for="ignore_casing" id="ignore_casing_label">Ignore Casing</label>
+            </div>
+            <select name="select_text" id="select_text">
+                <option value="">Text name</option>
+            </select>
+        </div>
+        <div class="text_wrapper_active"  style="display: none;">
+            <div class="text_details">
+                <div class="text_info">
+                    <h2 id="text_title">Text tile</h2>
+                    <div class="text_info_lower">
+                        <p id="text_info">author</p>
+                        <p id="text_info">154 words</p>
+                        <p id="text_info">324 characters</p>
                     </div>
-                    <div>
-                        <label for="lang_swedish"><input type="radio" name="language" id="lang_swedish" value="sv">Svenska</label>
-                        <label for="lang_english"><input type="radio" name="language" id="lang_english" value="en">English</label>
+                </div>
+                <div class="text_live_stat">
+                    <div class="stat_block stat_start">
+                        <p>WPM: <span>56</span></p>
+                    </div>
+                    <div class="stat_block">
+                        <p>Net WPM: <span>52</span></p>
+                    </div>
+                    <div class="stat_block">
+                        <p>Errors: <span>8</span></p>
+                    </div>
+                    <div class="stat_block stat_end">
+                        <p>Accuracy: <span>95</span>%</p>
                     </div>
                 </div>
-                <div class="side_block">
-                    <label for="select_text" id="select_text_label">Choose text</label>
-                    <select name="select_text" id="select_text"></select>
+            </div>
+
+            <p id="text_window">The forest stood still under a canopy of emerald leaves, where sunlight filtered through in golden streams. Birds sang a melody of morning, their tunes echoing through the ancient trees. A brook meandered gently, its waters glistening like silver. In the distance, a deer paused, ears twitching, sensing the quiet magic that lingered in the air.</p>
+        </div>
+        <div class="text_wrapper_selection">
+            <div class="text_details_selection">
+                <div class="text_info_selection">
+                    <h2 id="text_title">Text tile</h2>
+                    <div class="text_info_lower_selection">
+                        <p id="text_info">author</p>
+                        <p id="text_info">154 words</p>
+                        <p id="text_info">324 characters</p>
+                    </div>
                 </div>
             </div>
-            <div class="text_wrapper">
-                <h2 id="text_title">Text tile</h2>
-                <p id="text_info"></p>
-                <p id="text_window"></p>
-            </div>
-            <div class="text_input_wrapper">
-                <input type="text" name="text_input" id="text_input" placeholder="Type here...">
-            </div>
-            <div class="controls_wrapper">
-                <button class="control_button"><img src="img/play_icon.svg" alt=""></button>
-                <button class="control_button"><img src="img/stop_icon.svg" alt=""></button>
-            </div>
-            <div class="side_wrapper">
-                <div class="side_block">
-                    <canvas id="stat_canvas"></canvas>
+            <div class="text_stat">
+                <div class="text_stat_best">
+                    <div class="stat_block stat_start">
+                        <img src="img/best_score_dark.svg" alt="">
+                    </div>
+                    <div class="stat_block">
+                        <p>WPM: <span>56</span></p>
+                    </div>
+                    <div class="stat_block">
+                        <p>Net WPM: <span>52</span></p>
+                    </div>
+                    <div class="stat_block">
+                        <p>Errors: <span>8</span></p>
+                    </div>
+                    <div class="stat_block stat_end">
+                        <p>Accuracy: <span>95</span>%</p>
+                    </div>
                 </div>
-                <div class="side_block">
-                    <p>Gross WPM: <span id="gross_wpm"></span></p>
-                    <p>Net WPM: <span id="net_wpm"></span></p>
+                <div class="text_stat_last">
+                    <div class="stat_block stat_start">
+                        <img src="img/previous_score_dark.svg" alt="">
+                    </div>
+                    <div class="stat_block">
+                        <p>WPM: <span>56</span></p>
+                    </div>
+                    <div class="stat_block">
+                        <p>Net WPM: <span>52</span></p>
+                    </div>
+                    <div class="stat_block">
+                        <p>Errors: <span>8</span></p>
+                    </div>
+                    <div class="stat_block stat_end">
+                        <p>Accuracy: <span>95</span>%</p>
+                    </div>
                 </div>
-                <div class="side_block">
-                    <p>Accuracy: <span id="accuracy"></span></p>
-                    <p>Errors: <span id="errors"></span></p>
-                </div>
+                
             </div>
-        </main>
-        <footer>
-            <hr>
-            <p>Copyright &copy; 2025 Kiryl Yasny. No rights reserverd.</p>
-            <a href="mailto:kiya2400@student.miun.se">Contact me!</a>
-        </footer>
-    </div>
+        </div>
+        <div class="controls_wrapper">
+            <button class="control_button">Start</button>
+            <button class="control_button stop_button">Stop</button>
+        </div>
+    </main>
+    <footer>
+        <div class="custom_check">
+            <img src="" alt="">
+            <select name="" id="">
+                <option value="">Language</option>
+            </select>
+        </div>
+        <div class="custom_check">
+            <input type="checkbox" name="color_scheme" id="color_scheme"><label for="color_scheme" id="color_scheme_label">Night mode</label>
+        </div>
+        <div class="custom_check">
+            <input type="checkbox" name="save_score" id="save_score"><label for="save_score" id="save_score_label">Save score</label>
+        </div>
+        <div class="custom_check">
+            <input type="checkbox" name="animations_label" id="animations_label"><label for="animations_label" id="animations_label">Animations</label>
+        </div>
+        <a href="">Privacy Policy</a>
+        <a href="">Credits</a>
+    </footer>
 </body>
 </html>

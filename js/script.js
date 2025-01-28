@@ -359,7 +359,7 @@ function document_init(is_xml_connected) {
 
     select_init();
     controls_init();
-    canvas_init();
+    // canvas_init();
     reset_game();
 }
 
