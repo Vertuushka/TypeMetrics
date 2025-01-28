@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TypeSnap</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js"></script>
+</head>
+<body>
+    <div class="body_wrapper">
+        <header>
+            <img src="img/logo.svg" alt="">
+            <h1>TypeSnap</h1>
+        </header>
+        <main>
+            <div class="side_wrapper">
+                <div class="side_block">
+                    <div class="side_wrapper">
+                        <input type="checkbox" name="ignore_casing" id="ignore_casing"><label for="ignore_casing" id="ignore_casing_label">Ignore Casing</label>
+                    </div>
+                    <div>
+                        <label for="lang_swedish"><input type="radio" name="language" id="lang_swedish" value="sv">Svenska</label>
+                        <label for="lang_english"><input type="radio" name="language" id="lang_english" value="en">English</label>
+                    </div>
+                </div>
+                <div class="side_block">
+                    <label for="select_text" id="select_text_label">Choose text</label>
+                    <select name="select_text" id="select_text"></select>
+                </div>
+            </div>
+            <div class="text_wrapper">
+                <h2 id="text_title">Text tile</h2>
+                <p id="text_info"></p>
+                <p id="text_window"></p>
+            </div>
+            <div class="text_input_wrapper">
+                <input type="text" name="text_input" id="text_input" placeholder="Type here...">
+            </div>
+            <div class="controls_wrapper">
+                <button class="control_button"><img src="img/play_icon.svg" alt=""></button>
+                <button class="control_button"><img src="img/stop_icon.svg" alt=""></button>
+            </div>
+            <div class="side_wrapper">
+                <div class="side_block">
+                    <canvas id="stat_canvas"></canvas>
+                </div>
+                <div class="side_block">
+                    <p>Gross WPM: <span id="gross_wpm"></span></p>
+                    <p>Net WPM: <span id="net_wpm"></span></p>
+                </div>
+                <div class="side_block">
+                    <p>Accuracy: <span id="accuracy"></span></p>
+                    <p>Errors: <span id="errors"></span></p>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <hr>
+            <p>Copyright &copy; 2025 Kiryl Yasny. No rights reserverd.</p>
+            <a href="mailto:kiya2400@student.miun.se">Contact me!</a>
+        </footer>
+    </div>
+</body>
+</html>
