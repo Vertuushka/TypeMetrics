@@ -13,7 +13,7 @@ html {
 }
 
 body {
-    padding: 64px 64px 0px 64px;
+    padding: 64px 512px 64px 512px;
     background: linear-gradient(0deg, #FFFFFF, #F5F5F5);
     height: 100vh;
     display: flex;
@@ -27,7 +27,7 @@ main {
     display: flex;
     flex-direction: column;
     flex: 1;
-    max-width: 50%;
+    width: 100%;
 }
 
 .text_controls {
@@ -159,7 +159,7 @@ main {
 }
 
 footer {
-    width: 50%;
+    width: 100%;
     display: flex;
     justify-content: space-between;
 }
