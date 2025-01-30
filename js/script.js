@@ -68,7 +68,7 @@ const TRANSLATION = {
 }
 
 function toggle_class(object, class_name) {
-    object.classList.toggle(class_name);
+    // object.classList.toggle(class_name);
 }
 
 function toggle_class_array(objects, class_name) {
@@ -104,22 +104,22 @@ function reset_text() {
 
     let text = texts[current_text];
 
-    for(let i = 0; i < text.length; i++) {
-        let span = document.createElement('span');
-        span.innerHTML = text[i];
-        text_window.appendChild(span); 
-        wrappers.push(span);
-    }
+        // for(let i = 0; i < text.length; i++) {
+        //     let span = document.createElement('span');
+        //     span.innerHTML = text[i];
+        //     text_window.appendChild(span); 
+        //     wrappers.push(span);
+        // }
 
     toggle_class(wrappers[0], "current_symbol");
 }
 
 function calculate_characters(str) {
-    return str.length;
+    // return str.length;
 }
 
 function calculate_words(str) {
-    return str.trim().split(' ').length;
+    // return str.trim().split(' ').length;
 }
 
 function select_update() {
@@ -136,9 +136,9 @@ function select_update() {
 
 function translate_page() {
     document.querySelector("html").setAttribute("lang", document_lang)
-    document.querySelector("#ignore_casing_label").innerHTML = TRANSLATION[document_lang].ignore_casing;
-    document.querySelector("#select_text_label").innerHTML = TRANSLATION[document_lang].select_text;
-    text_input.setAttribute("placeholder", TRANSLATION[document_lang].type_here);
+    // document.querySelector("#ignore_casing_label").innerHTML = TRANSLATION[document_lang].ignore_casing;
+    // document.querySelector("#select_text_label").innerHTML = TRANSLATION[document_lang].select_text;
+    // text_input.setAttribute("placeholder", TRANSLATION[document_lang].type_here);
 }
 
 function language_update() {
@@ -161,13 +161,13 @@ function language_update() {
 function select_init() {
     text_select_element = document.querySelector("#select_text");
 
-    swedish_radio = document.querySelector("#lang_swedish");
-    english_radio = document.querySelector("#lang_english");
-    swedish_radio.addEventListener("change", language_update);
-    english_radio.addEventListener("change", language_update);
+    // swedish_radio = document.querySelector("#lang_swedish");
+    // english_radio = document.querySelector("#lang_english");
+    // swedish_radio.addEventListener("change", language_update);
+    // english_radio.addEventListener("change", language_update);
 
-    swedish_radio.checked = true;
-    english_radio.checked = false;
+    // swedish_radio.checked = true;
+    // english_radio.checked = false;
 
     for(let i = 0; i < titles.length; i++) {
         let new_option = document.createElement('option');
@@ -210,16 +210,16 @@ function clear_graph() {
 
 function reset_game() {
     current_char = 0;
-    stat_gross.innerHTML = '0';
-    stat_net.innerHTML = '0';
-    stat_acc.innerHTML = '100%';
-    stat_err.innerHTML = '0';
+    // stat_gross.innerHTML = '0';
+    // stat_net.innerHTML = '0';
+    // stat_acc.innerHTML = '100%';
+    // stat_err.innerHTML = '0';
     errors = 0;
     start_timestamp = 0;
-    text_input.value = '';
+    // text_input.value = '';
     wpm_data = [];
     reset_text();
-    clear_graph();
+    // clear_graph();
 }
 
 function toggle_game_state() {
@@ -336,6 +336,8 @@ function handle_text_input(event) {
     }        
 }
 
+
+
 function document_init(is_xml_connected) {
     text_window = document.querySelector("#text_window");
 
@@ -350,10 +352,10 @@ function document_init(is_xml_connected) {
     stat_net = document.querySelector("#net_wpm");
     stat_acc = document.querySelector("#accuracy");
     stat_err = document.querySelector("#errors");
-    text_input = document.querySelector("#text_input");
+    // text_input = document.querySelector("#text_input");
     ignore_casing_element = document.querySelector("#ignore_casing");
     
-    text_input.addEventListener("keydown", handle_text_input);
+    // text_input.addEventListener("keydown", handle_text_input);
 
     sound_controller = new Audio(ERROR_SOUND_PATH);
 

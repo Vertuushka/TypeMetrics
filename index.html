@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <title>TypeSnap</title>
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/main.js"></script>
     <!-- <script src="js/script.js"></script> -->
+    <!-- <script src="js/settings.js"></script> -->
 </head>
 <body>
     <header>
@@ -13,7 +15,7 @@
     <main>
         <div class="text_controls">
             <div class="custom_check">
-                <input type="checkbox" name="ignore_casing" id="ignore_casing"><label for="ignore_casing" id="ignore_casing_label">Ignore Casing</label>
+                <input type="checkbox" name="ignore_casing" id="ignore_casing" class="custom_checkbox"><label for="ignore_casing" id="ignore_casing_label" class="custom_checkbox_label"><img src="img/unchecked_light.svg" alt="" class="custom_checkbox_img">Ignore Casing</label>
             </div>
             <select name="select_text" id="select_text">
                 <option value="">Text name</option>
@@ -22,11 +24,11 @@
         <div class="text_wrapper_active">
             <div class="text_details">
                 <div class="text_info">
-                    <h2 id="text_title">Text tile</h2>
+                    <h2 id="text_title"></h2>
                     <div class="text_info_lower">
-                        <p id="text_info">author</p>
-                        <p id="text_info">154 words</p>
-                        <p id="text_info">324 characters</p>
+                        <p id="text_info"></p>
+                        <p id="text_info"></p>
+                        <p id="text_info"></p>
                     </div>
                 </div>
                 <div class="text_live_stat">
@@ -110,14 +112,14 @@
                 <option value="">Language</option>
             </select>
         </div>
-        <div class="custom_check">
-            <input type="checkbox" name="color_scheme" id="color_scheme"><label for="color_scheme" id="color_scheme_label">Night mode</label>
+        <div class="custom_check" id="color_scheme_container">
+            <input type="checkbox" name="color_scheme" id="color_scheme"><label for="color_scheme" id="color_scheme_label"><img src="img/night_mode_unchecked.svg" alt="" id="color_scheme_img">Night mode</label>
         </div>
         <div class="custom_check">
-            <input type="checkbox" name="save_score" id="save_score"><label for="save_score" id="save_score_label">Save score</label>
+            <input type="checkbox" name="save_score" id="save_score" class="custom_checkbox"><label for="save_score" id="save_score_label" class="custom_checkbox_label"><img src="img/unchecked_light.svg" alt="" class="custom_checkbox_img">Save score</label>
         </div>
         <div class="custom_check">
-            <input type="checkbox" name="animations_label" id="animations_label"><label for="animations_label" id="animations_label">Animations</label>
+            <input type="checkbox" name="animations_label" id="animations_label" class="custom_checkbox"><label for="animations_label" id="animations_label" class="custom_checkbox_label"><img src="img/unchecked_light.svg" alt="" class="custom_checkbox_img">Animations</label>
         </div>
         <a href="">Privacy Policy</a>
         <a href="">Credits</a>
