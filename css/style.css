@@ -7,7 +7,7 @@
     --green:            #2ECC71;
     --red:              #E74C3C;
     --yellow:           #F39C12;
-    --inactive_light:   #A3A3A3;
+    --inactive:         #A3A3A3;
 
     --text_20: 20px;
     --text_14: 14px;
@@ -21,6 +21,23 @@
     --space_128:    8rem;
     --space_256:    16rem;
     --space_512:    32rem;
+
+}
+
+@property --rotate {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes rotate_gradient {
+    0% {
+        --rotate: 0deg;
+    }
+    
+    100% {
+        --rotate: 360deg;
+    }
 }
 
 * {
@@ -30,20 +47,20 @@
 }
 
 html {
-    font-size: 16px;
+    font-size: 1rem;
     font-family: "Poppins";
-    color: #0A2540;
+    color: var(--dark);
 }
 
 body {
-    padding: 64px 512px 64px 512px;
-    background: linear-gradient(0deg, #FFFFFF, #F5F5F5);
+    padding: var(--space_64) var(--space_512);
+    background: var(--light);
     height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 64px;
+    gap: var(--space_64);
 }
 
 main {
@@ -57,8 +74,8 @@ main {
     display: flex;
     justify-content: center;
     align-items: center ;
-    gap: 32px;
-    margin-bottom: 32px;
+    gap: var(--space_32);
+    margin-bottom: var(--space_32);
 }
 
 .text_wrapper_active, .text_wrapper_selection {
@@ -67,10 +84,10 @@ main {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    padding: 64px;
+    padding: var(--space_64);
     background-color: #fff;
-    border-radius: 32px;
-    gap: 64px;
+    border-radius: var(--space_32);
+    gap: var(--space_64);
 }
 
 .text_wrapper_active::before, .text_wrapper_selection::before {
@@ -81,9 +98,11 @@ main {
     right: -3px;
     bottom: -3px;
     z-index: -1;
-    background: linear-gradient(150deg, #4C9AFF, #2ECC71, #E74C3C, #F39C12, #E74C3C, #2ECC71, #4C9AFF);
+    background: linear-gradient(var(--rotate), #4C9AFF, #2ECC71, #E74C3C, #F39C12, #E74C3C, #2ECC71, #4C9AFF);
     border-radius: 32px;
     box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.25);
+
+    animation: rotate_gradient 5s linear infinite;
 }
 
 .controls_wrapper {
@@ -204,4 +223,61 @@ footer {
     width: 1.5rem;
     height: auto;
     border-radius: 100%;
+}
+
+.custom_select {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.select {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.custom_check:hover {
+    text-decoration: underline;
+}
+
+.select:hover {
+    text-decoration: underline;
+}
+
+.options {
+    width: max-content;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    margin-top: 32px;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid var(--dark);
+    z-index: 1;
+    font-size: 14px;
+    gap: 4px;
+    padding: 4px;
+    top: 0;
+}
+
+.option {
+    padding: 2px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.option:hover {
+    background-color: var(--inactive);
+}
+
+.hidden {
+    display: none;
+}
+
+.text_select_icon {
+    transition: 0.2s;
 }
