@@ -1,3 +1,5 @@
+import { local_strings } from "./localization.js"
+
 const storage_keys = ["casing", "save_score", "animations"];
 const night_mode_key = "night_mode";
 const language_key = "lang";
@@ -79,6 +81,12 @@ const document_colors = {
     }
 }
 
+let language_handler;
+let ignore_casing;
+let color_scheme;
+let save_score;
+let animations;
+
 class Custom_Checkbox {
     constructor(input_element, label_element, img_element, storage_key) {
         this.element = input_element;
@@ -143,11 +151,11 @@ class Color_Scheme extends Custom_Checkbox {
         console.log(this.night_mode);
         if (this.night_mode == true) {
             this.set_colors("dark");
-            this.label.innerHTML = "Light mode";
+            this.label.innerHTML = local_strings[language_handler.language]["light_mode"];
         }
         else {
             this.set_colors("light");
-            this.label.innerHTML = "Night mode";
+            this.label.innerHTML = local_strings[language_handler.language]["dark_mode"];
         }
     }
 
@@ -244,25 +252,134 @@ class Language_Select extends Custom_Select {
     }
 }
 
+class Statistic {
+    constructor(textId){
+        this.textId = textId;
 
-function document_init() {
+        this.best_wpm = 0;
+        this.best_nwpm = 0;
+        this.best_errors = 0;
+        this.best_accuracy = 0;
+
+        this.last_wpm = 0;
+        this.last_nwpm = 0;
+        this.last_errors = 0;
+        this.last_accuracy = 0;
+
+        this.setup_score();
+    }
+
+    update_score() {
+        this.best_wpm = Math.max(this.best_wpm, this.last_wpm);
+        this.best_nwpm = Math.max(this.best_nwpm, this.last_nwpm);
+        this.best_errors = Math.min(this.best_errors, this.last_errors);
+        this.best_accuracy = Math.max(this.best_accuracy, this.last_accuracy);
+
+        let update_str = `{
+        "best": { "wpm":"${this.best_wpm}", 
+                "nwpm":"${this.best_nwpm}",
+                "errors":"${this.best_errors}",
+                "accuracy":"${this.best_accuracy}"
+                },
+        "last": { "wpm":"${this.last_wpm}",
+                  "nwpm":"${this.last_nwpm}",
+                  "errors":"${this.last_errors}",
+                  "accuracy":"${this.last_accuracy}"
+                }
+        }`
+
+        localStorage.setItem(`stat_${this.textId}`, update_str);
+    }
+
+    setup_score() {
+        let stat = localStorage.getItem(`stat_${this.textId}`);
+
+        if(stat != null) {
+            let stat_obj = JSON.parse(stat);
+            this.best_wpm = stat_obj.best.wpm;
+            this.best_nwpm = stat_obj.best.nwpm;
+            this.best_errors = stat_obj.best.errors;
+            this.best_accuracy = stat_obj.best.accuracy;
+
+            this.last_wpm = stat_obj.last.wpm;
+            this.last_nwpm = stat_obj.last.nwpm;
+            this.last_errors = stat_obj.last.errors;
+            this.last_accuracy = stat_obj.last.accuracy;
+        }
+    }
+    
+}
+
+class Text_Container {
+    constructor(wrapper, text_title, text_author, text_words, text_chars) {
+
+    }
+}
+
+class Text{
+    constructor(id, title, author, language, text){
+        this.id = id;
+        this.title = this.title;
+        this.author = this.author;
+        this.language = this.language;
+        this.text = text;
+
+        this.words = this.text.trim().split(' ').length;
+        this.characters = this.text.length;
+    }
+}
+
+function xml_connection_fail() {
+    document_init(false);
+}
+
+function parse_xml() {
+    if (this.status != 200) {
+        xml_connection_fail();
+        return;
+    }
+
+    let doc = this.responseXML;
+    let doc_titles = doc.getElementsByTagName("title");
+    let doc_authors = doc.getElementsByTagName("author");
+    let doc_languages = doc.getElementsByTagName("language");
+    let doc_texts = doc.getElementsByTagName("text");
+
+    for(let i=0; i < title_elements.length; i++) {
+        texts[`text_${i+1}`] = new Text(i, doc_titles[i], doc_authors[i], doc_languages[i], doc_texts[i]);
+    }
+
+    document_init(true);
+}
+
+function get_texts() {
+    let req = new XMLHttpRequest();
+    req.addEventListener("load", parse_xml);
+    req.addEventListener("error", xml_connection_fail);
+
+    req.open("GET", 'texts.xml');
+    req.send();
+}
+
+function document_init(is_xml_connected) {
+
+    language_handler = new Language_Select("language", language_key);
+    new Custom_Select("text");
 
     // general custom checkboxes set-up
     let custom_checkboxes = document.querySelectorAll(".custom_checkbox");
     let custom_labels = document.querySelectorAll(".custom_checkbox_label");
     let custom_images = document.querySelectorAll(".custom_checkbox_img");
-    custom_checkboxes.forEach((element, index) => {
-        new Custom_Checkbox(element, custom_labels[index], custom_images[index], storage_keys[index]);
-    });
-    // night mode checkbox set-up
+    ignore_casing = new Custom_Checkbox(custom_checkboxes[0], custom_labels[0], custom_images[0], storage_keys[0]);
+    save_score = new Custom_Checkbox(custom_checkboxes[1], custom_labels[1], custom_images[1], storage_keys[1]);
+    animations = new Custom_Checkbox(custom_checkboxes[2], custom_labels[2], custom_images[2], storage_keys[2]);
+
     let color_scheme_checkbox = document.querySelector("#color_scheme");
     let color_scheme_label = document.querySelector("#color_scheme_label");
     let color_scheme_icon = document.querySelector("#color_scheme_img");
-    new Color_Scheme(color_scheme_checkbox, color_scheme_label, color_scheme_icon, night_mode_key);
+    color_scheme = new Color_Scheme(color_scheme_checkbox, color_scheme_label, color_scheme_icon, night_mode_key);
     
-    // text selection element set-up
-    new Custom_Select("text");
-    new Language_Select("language", language_key);
+    // text and language selection elements set-up
 }
 
-document.addEventListener("DOMContentLoaded", document_init)
+document.addEventListener("DOMContentLoaded", get_texts)
