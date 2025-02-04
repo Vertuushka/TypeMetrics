@@ -1,8 +1,12 @@
 import { local_strings } from "./localization.js"
 
-const storage_keys = ["casing", "save_score", "animations"];
-const night_mode_key = "night_mode";
-const language_key = "lang";
+const storage_keys = {
+    "ignore_casing": "casing",
+    "save_score": "save_score",
+    "animations": "animations",
+    "color_scheme": "night_mode",
+    "language": "lang",
+}
 
 const svg_content = {
     "checkbox_unchecked": `<mask id="mask0_49_334" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
@@ -81,305 +85,133 @@ const document_colors = {
     }
 }
 
-let language_handler;
+// GLOBAL OBJECTS
+
 let ignore_casing;
 let color_scheme;
 let save_score;
 let animations;
 
+
+// CLASSES
 class Custom_Checkbox {
-    constructor(input_element, label_element, img_element, storage_key) {
-        this.element = input_element;
-        this.label = label_element;
-        this.image = img_element;
+    constructor(prefix, checked_icon, unchecked_icon, storage_key) {
+        this.prefix = prefix;
+        this.checkbox = document.querySelector(`.${prefix}_checkbox`);
+        this.icon = document.querySelector(`.${prefix}_icon`);
+        this.label = document.querySelector(`.${prefix}_label`);
+
+        this.checked_icon = checked_icon;
+        this.unchecked_icon = unchecked_icon;
         this.storage_key = storage_key;
 
-        this.set_initial_state(localStorage.getItem(this.storage_key));
-
-        this.toggle_checkbox = this.toggle_checkbox.bind(this);
-        this.element.addEventListener("change", this.toggle_checkbox);
+        this.checkbox.addEventListener("change", this.on_click.bind(this));
+        this.set_value = this.get_value;
+        this.on_load();
     }
 
-    set_initial_state(state){
-        if (state === "true") {
-            this.element.checked = true;
-            this.toggle_checkbox(true);
+    get get_value() {
+        return JSON.parse(localStorage.getItem(this.storage_key));
+    }
+
+    set set_value(value) {
+        let new_value = JSON.stringify(value);
+        localStorage.setItem(this.storage_key, new_value);
+        this.update_state(value);
+    }
+
+    on_load() {
+        switch (this.prefix) {
+            case "color_scheme":
+                this.color_scheme_onLoad();
+            break;
+            case "animations":
+                this.animations_onLoad();
+            break;
+            default:
+            break;
         }
     }
 
-    toggle_checkbox(object, visual_only=false) {
-        let current_value = this.element.checked;
-        if (current_value == true)
-        {
-            this.image.innerHTML = svg_content["checkbox_checked"];
-        }
+    on_click(override=null) {
+        this.set_value = this.checkbox.checked;
+        if (this.prefix == "color_scheme")
+            change_color_scheme(this.get_value);
+        if(this.prefix == "animations")
+            change_animations(this.get_value);
+    }
+
+    toggle_icon() {
+        if (this.get_value == true) 
+            this.icon.innerHTML = this.checked_icon;
         else
-            this.image.innerHTML = svg_content["checkbox_unchecked"];
-        
-        if (visual_only == false) 
-            localStorage.setItem(this.storage_key, JSON.stringify(current_value));        
-    }
-}
-
-class Color_Scheme extends Custom_Checkbox {
-    constructor(input_element, label_element, img_element, storage_key) {
-        super(input_element, label_element, img_element, storage_key);
-        this.night_mode;
-        if (this.element.checked)
-            this.night_mode = true;
-        else
-            this.night_mode = false;
-
-        console.log(this.night_mode);
-    }
-
-    toggle_checkbox(object, visual_only=false) {
-        let current_value = this.element.checked;
-        if (current_value == true)
-            this.image.innerHTML = svg_content["light_mode"];
-        else
-            this.image.innerHTML = svg_content["night_mode"];
-        if (visual_only == false) {
-            localStorage.setItem(this.storage_key, JSON.stringify(current_value));
-            this.switch_mode();
-        }
-            
-    }
-
-    switch_mode() {
-        this.night_mode = !this.night_mode;
-        console.log(this.night_mode);
-        if (this.night_mode == true) {
-            this.set_colors("dark");
-            this.label.innerHTML = local_strings[language_handler.language]["light_mode"];
-        }
-        else {
-            this.set_colors("light");
-            this.label.innerHTML = local_strings[language_handler.language]["dark_mode"];
-        }
-    }
-
-    set_colors(mode) {
-        if(mode != "dark" && mode != "light") 
-            return;
-
-        Object.entries(document_colors[mode]).forEach(([key, value]) => {
-            document.documentElement.style.setProperty(key, value);
-        })
-    }
-}
-
-class Custom_Select {
-    constructor(select_prefix) {
-        this.select = document.querySelector(`.${select_prefix}_select`);
-        this.icon = document.querySelector(`.${select_prefix}_select_icon`);
-        this.label = document.querySelector(`.${select_prefix}_select_label`);
-        this.option = document.querySelector(`.${select_prefix}_options`)
-        this.options = document.querySelectorAll(`.${select_prefix}_option`);
-
-        this.toggle_options = this.toggle_options.bind(this);
-        this.hide_option = this.hide_option.bind(this);
-        this.select.addEventListener("click", this.toggle_options)
-        document.addEventListener("click", this.hide_option);
-
-        this.event = new CustomEvent("change", {bubbles: true, composed: true});
-
-        this.invoke_select_update = this.invoke_select_update.bind(this);
-        this.options.forEach(element => {
-            element.addEventListener("click", this.invoke_select_update);
-        })
+            this.icon.innerHTML = this.unchecked_icon;
     }
     
-    hide_option() {
-        if(!this.select.contains(event.target) && !this.option.contains(event.target)){
-            this.option.classList.add("hidden");
-            this.icon.style.transform = "rotate(0deg)";
+    update_state(value){
+        this.checkbox.checked = value;
+        this.toggle_icon();
+    }
+
+    color_scheme_onLoad() {
+        if (this.get_value == null) {
+            if(window.matchMedia('(prefers-color-scheme: dark)').matches == true)
+                this.set_value = true;
+            else
+                this.set_value = false;
+        }
+        change_color_scheme(this.get_value);
+    }
+
+    animations_onLoad() {
+        if (this.get_value == null) {
+           this.set_value = true;
+           change_animations(this.get_value);
         }
     }
-
-    toggle_options() {
-        this.option.classList.toggle("hidden");
-        if(this.option.classList.contains("hidden")) 
-            this.icon.style.transform = "rotate(0deg)";
-        else
-            this.icon.style.transform = "rotate(180deg)";
-    }
-    
-    invoke_select_update() {
-        dispatchEvent(this.event);
-        this.label.innerHTML = event.target.innerHTML;
-        this.toggle_options();
-    }
-
 }
 
-class Language_Select extends Custom_Select {
-    constructor(select_prefix, storage_key) {
-        super(select_prefix);
-        this.storage_key = storage_key;
-        let selected_language = localStorage.getItem(this.storage_key);
-        let index = selected_language in lang;
-        if (index == true)  {
-            this.language = selected_language;
-            this.update_language(this.language);
+function change_color_scheme(is_night=false) {
+    if (is_night == true) {
+        for (let key in document_colors.dark) {
+            document.documentElement.style.setProperty(key, document_colors.dark[key]);
         }
-        else  {
-            if (navigator.language in lang)
-                this.update_language(navigator.language);  
-            else 
-                this.update_language("en");      
-        }
-
-    }
-
-    update_language(lang_code) {
-        this.language = lang_code;
-        localStorage.setItem(this.storage_key, this.language);
-        this.label.innerHTML = lang[this.language];
-        this.icon.innerHTML = svg_content[this.language];
-        console.log(svg_content[this.language]);
-    }
-
-    toggle_options() {
-        this.option.classList.toggle("hidden");
-    }
-
-    invoke_select_update() {
-        dispatchEvent(this.event);
-        let lang_code = event.target.getAttribute("value");
-        this.update_language(lang_code);
-        this.toggle_options();
-    }
-}
-
-class Statistic {
-    constructor(textId){
-        this.textId = textId;
-
-        this.best_wpm = 0;
-        this.best_nwpm = 0;
-        this.best_errors = 0;
-        this.best_accuracy = 0;
-
-        this.last_wpm = 0;
-        this.last_nwpm = 0;
-        this.last_errors = 0;
-        this.last_accuracy = 0;
-
-        this.setup_score();
-    }
-
-    update_score() {
-        this.best_wpm = Math.max(this.best_wpm, this.last_wpm);
-        this.best_nwpm = Math.max(this.best_nwpm, this.last_nwpm);
-        this.best_errors = Math.min(this.best_errors, this.last_errors);
-        this.best_accuracy = Math.max(this.best_accuracy, this.last_accuracy);
-
-        let update_str = `{
-        "best": { "wpm":"${this.best_wpm}", 
-                "nwpm":"${this.best_nwpm}",
-                "errors":"${this.best_errors}",
-                "accuracy":"${this.best_accuracy}"
-                },
-        "last": { "wpm":"${this.last_wpm}",
-                  "nwpm":"${this.last_nwpm}",
-                  "errors":"${this.last_errors}",
-                  "accuracy":"${this.last_accuracy}"
-                }
-        }`
-
-        localStorage.setItem(`stat_${this.textId}`, update_str);
-    }
-
-    setup_score() {
-        let stat = localStorage.getItem(`stat_${this.textId}`);
-
-        if(stat != null) {
-            let stat_obj = JSON.parse(stat);
-            this.best_wpm = stat_obj.best.wpm;
-            this.best_nwpm = stat_obj.best.nwpm;
-            this.best_errors = stat_obj.best.errors;
-            this.best_accuracy = stat_obj.best.accuracy;
-
-            this.last_wpm = stat_obj.last.wpm;
-            this.last_nwpm = stat_obj.last.nwpm;
-            this.last_errors = stat_obj.last.errors;
-            this.last_accuracy = stat_obj.last.accuracy;
+    } else {
+        for(let key in document_colors.light) {
+            document.documentElement.style.setProperty(key, document_colors.light[key]);
         }
     }
-    
 }
 
-class Text_Container {
-    constructor(wrapper, text_title, text_author, text_words, text_chars) {
-
-    }
+function change_animations(override=true) {
+    document.querySelectorAll(".text_wrapper").forEach(el => {
+        el.classList.toggle("paused");
+    })
 }
 
-class Text{
-    constructor(id, title, author, language, text){
-        this.id = id;
-        this.title = this.title;
-        this.author = this.author;
-        this.language = this.language;
-        this.text = text;
+function document_init() {
+    ignore_casing = new Custom_Checkbox("ignore_casing", 
+        svg_content["checkbox_checked"], 
+        svg_content["checkbox_unchecked"],
+        storage_keys["ignore_casing"]);
 
-        this.words = this.text.trim().split(' ').length;
-        this.characters = this.text.length;
-    }
+    color_scheme = new Custom_Checkbox("color_scheme",
+        svg_content["light_mode"],
+        svg_content["night_mode"],
+        storage_keys["color_scheme"]
+    )
+
+    save_score = new Custom_Checkbox("save_score",
+        svg_content["checkbox_checked"],
+        svg_content["checkbox_unchecked"],
+        storage_keys["save_score"]
+    )
+
+    animations = new Custom_Checkbox("animations",
+        svg_content["checkbox_checked"],
+        svg_content["checkbox_unchecked"],
+        storage_keys["animations"]
+    )
 }
 
-function xml_connection_fail() {
-    document_init(false);
-}
-
-function parse_xml() {
-    if (this.status != 200) {
-        xml_connection_fail();
-        return;
-    }
-
-    let doc = this.responseXML;
-    let doc_titles = doc.getElementsByTagName("title");
-    let doc_authors = doc.getElementsByTagName("author");
-    let doc_languages = doc.getElementsByTagName("language");
-    let doc_texts = doc.getElementsByTagName("text");
-
-    for(let i=0; i < title_elements.length; i++) {
-        texts[`text_${i+1}`] = new Text(i, doc_titles[i], doc_authors[i], doc_languages[i], doc_texts[i]);
-    }
-
-    document_init(true);
-}
-
-function get_texts() {
-    let req = new XMLHttpRequest();
-    req.addEventListener("load", parse_xml);
-    req.addEventListener("error", xml_connection_fail);
-
-    req.open("GET", 'texts.xml');
-    req.send();
-}
-
-function document_init(is_xml_connected) {
-
-    language_handler = new Language_Select("language", language_key);
-    new Custom_Select("text");
-
-    // general custom checkboxes set-up
-    let custom_checkboxes = document.querySelectorAll(".custom_checkbox");
-    let custom_labels = document.querySelectorAll(".custom_checkbox_label");
-    let custom_images = document.querySelectorAll(".custom_checkbox_img");
-    ignore_casing = new Custom_Checkbox(custom_checkboxes[0], custom_labels[0], custom_images[0], storage_keys[0]);
-    save_score = new Custom_Checkbox(custom_checkboxes[1], custom_labels[1], custom_images[1], storage_keys[1]);
-    animations = new Custom_Checkbox(custom_checkboxes[2], custom_labels[2], custom_images[2], storage_keys[2]);
-
-    let color_scheme_checkbox = document.querySelector("#color_scheme");
-    let color_scheme_label = document.querySelector("#color_scheme_label");
-    let color_scheme_icon = document.querySelector("#color_scheme_img");
-    color_scheme = new Color_Scheme(color_scheme_checkbox, color_scheme_label, color_scheme_icon, night_mode_key);
-    
-    // text and language selection elements set-up
-}
-
-document.addEventListener("DOMContentLoaded", get_texts)
+document.addEventListener("DOMContentLoaded", document_init)

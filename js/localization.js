@@ -12,7 +12,10 @@ export const local_strings = {
         "save_score": "Save score",
         "animations": "Animations",
         "privacy_policy": "Privacy policy",
-        "references": "References"
+        "references": "References",
+        "en_tooltip": "English",
+        "sv_tooltip": "Swedish (Svenska)",
+        "ru_tooltip": "Russian (Русский)",
     },
 
     sv: {
@@ -28,7 +31,10 @@ export const local_strings = {
         "save_score": "Spara resultat",
         "animations": "Animationer",
         "privacy_policy": "Privacy policy",
-        "references": "Referenser"
+        "references": "Referenser",
+        "en_tooltip": "English",
+        "sv_tooltip": "Swedish (Svenska)",
+        "ru_tooltip": "Russian (Русский)",
     },
 
     ru: {
@@ -44,7 +50,10 @@ export const local_strings = {
         "save_score": "Статистика",
         "animations": "Анимации",
         "privacy_policy": "Политика конфиденциальности",
-        "references": "Ссылки"
+        "references": "Ссылки",
+        "en_tooltip": "English",
+        "sv_tooltip": "Swedish (Svenska)",
+        "ru_tooltip": "Russian (Русский)",
     }
 }
 

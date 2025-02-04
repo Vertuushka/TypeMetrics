@@ -16,9 +16,9 @@
     <main>
         <div class="text_controls">
             <div class="custom_check">
-                <input type="checkbox" name="ignore_casing" id="ignore_casing" class="custom_checkbox">
-                <label for="ignore_casing" id="ignore_casing_label" class="custom_checkbox_label">
-                    <svg class="custom_checkbox_img icon" width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <input type="checkbox" name="ignore_casing" id="ignore_casing" class="ignore_casing_checkbox">
+                <label for="ignore_casing">
+                    <svg class="ignore_casing_icon icon" width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <mask id="mask0_49_334" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
                             <rect width="24" height="24" fill="#D9D9D9"/>
                         </mask>
@@ -26,7 +26,7 @@
                             <path d="M12 24C10.34 24 8.78 23.685 7.32 23.055C5.86 22.425 4.59 21.57 3.51 20.49C2.43 19.41 1.575 18.14 0.945 16.68C0.315 15.22 0 13.66 0 12C0 10.34 0.315 8.78 0.945 7.32C1.575 5.86 2.43 4.59 3.51 3.51C4.59 2.43 5.86 1.575 7.32 0.945C8.78 0.315 10.34 0 12 0C13.66 0 15.22 0.315 16.68 0.945C18.14 1.575 19.41 2.43 20.49 3.51C21.57 4.59 22.425 5.86 23.055 7.32C23.685 8.78 24 10.34 24 12C24 13.66 23.685 15.22 23.055 16.68C22.425 18.14 21.57 19.41 20.49 20.49C19.41 21.57 18.14 22.425 16.68 23.055C15.22 23.685 13.66 24 12 24ZM12 21.6C14.68 21.6 16.95 20.67 18.81 18.81C20.67 16.95 21.6 14.68 21.6 12C21.6 9.32 20.67 7.05 18.81 5.19C16.95 3.33 14.68 2.4 12 2.4C9.32 2.4 7.05 3.33 5.19 5.19C3.33 7.05 2.4 9.32 2.4 12C2.4 14.68 3.33 16.95 5.19 18.81C7.05 20.67 9.32 21.6 12 21.6Z" fill="#0A2540"/>
                         </g>
                     </svg>
-                    Ignore Casing
+                    <span class="ignore_casing_label">Ignore Casing</span>
                 </label>
             </div>
             <div class="custom_select">
@@ -77,14 +77,14 @@
         </div>
 
         
-        <div class="text_wrapper">
+        <div class="text_wrapper" id="text_preview">
             <div class="text_details_selection">
                 <div class="text_info_selection">
-                    <h2 id="text_title">Text tile</h2>
+                    <h2 id="preview_title">Text tile</h2>
                     <div class="text_info_lower_selection">
-                        <p id="text_author">author</p>
-                        <p id="text_words">154 words</p>
-                        <p id="text_chars">324 characters</p>
+                        <p id="preview_author">author</p>
+                        <p id="preview_words">154 words</p>
+                        <p id="preview_chars">324 characters</p>
                     </div>
                 </div>
             </div>
@@ -101,16 +101,16 @@
                         </svg>
                     </div>
                     <div class="stat_block">
-                        <p>WPM: <span>56</span></p>
+                        <p>WPM:</p><p class="scoreboard_best_value">56</p>
                     </div>
                     <div class="stat_block">
-                        <p>Net WPM: <span>52</span></p>
+                        <p>Net WPM:</p><p class="scoreboard_best_value">52</p>
                     </div>
                     <div class="stat_block">
-                        <p>Errors: <span>8</span></p>
+                        <p>Errors:</p><p class="scoreboard_best_value">8</p>
                     </div>
                     <div class="stat_block stat_end">
-                        <p>Accuracy: <span>95</span>%</p>
+                        <p>Accuracy:</p><p class="scoreboard_best_value">95</p><p>%</p>
                     </div>
                 </div>
                 <div class="text_stat_last">
@@ -125,16 +125,16 @@
                         </svg>
                     </div>
                     <div class="stat_block">
-                        <p>WPM: <span>56</span></p>
+                        <p>WPM:</p><p class="scoreboard_last_value">56</p>
                     </div>
                     <div class="stat_block">
-                        <p>Net WPM: <span>52</span></p>
+                        <p>Net WPM:</p><p class="scoreboard_last_value">52</p>
                     </div>
                     <div class="stat_block">
-                        <p>Errors: <span>8</span></p>
+                        <p>Errors:</p><p class="scoreboard_last_value">8</p>
                     </div>
                     <div class="stat_block stat_end">
-                        <p>Accuracy: <span>95</span>%</p>
+                        <p>Accuracy:</p><p class="scoreboard_last_value">95</p><p>%</p>
                     </div>
                 </div>
                 
@@ -160,18 +160,18 @@
             </div>
         </div>
         <div class="custom_check" id="color_scheme_container">
-            <input type="checkbox" name="color_scheme" id="color_scheme">
-            <label for="color_scheme" >
-                <svg class="icon" id="color_scheme_img" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <input type="checkbox" name="color_scheme" id="color_scheme" class="color_scheme_checkbox">
+            <label for="color_scheme">
+                <svg class="color_scheme_icon icon" width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12.12 24C10.44 24 8.865 23.68 7.395 23.04C5.925 22.4 4.645 21.535 3.555 20.445C2.465 19.355 1.6 18.075 0.96 16.605C0.32 15.135 0 13.56 0 11.88C0 8.96 0.93 6.385 2.79 4.155C4.65 1.925 7.02 0.54 9.9 0C9.54 1.98 9.65 3.915 10.23 5.805C10.81 7.695 11.81 9.35 13.23 10.77C14.65 12.19 16.305 13.19 18.195 13.77C20.085 14.35 22.02 14.46 24 14.1C23.48 16.98 22.1 19.35 19.86 21.21C17.62 23.07 15.04 24 12.12 24Z" fill="#0A2540"/>
                 </svg>
-                <span id="color_scheme_label">Night mode</span>
+                <span class="color_scheme_label">Color scheme</span>
             </label>
         </div>
         <div class="custom_check">
-            <input type="checkbox" name="save_score" id="save_score" class="custom_checkbox">
-            <label for="save_score" id="save_score_label" class="custom_checkbox_label">
-                <svg class="custom_checkbox_img icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <input type="checkbox" name="save_score" id="save_score" class="save_score_checkbox">
+            <label for="save_score">
+                <svg class="save_score_icon icon" width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <mask id="mask0_49_334" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
                         <rect width="24" height="24" fill="#D9D9D9"/>
                     </mask>
@@ -179,13 +179,13 @@
                         <path d="M12 24C10.34 24 8.78 23.685 7.32 23.055C5.86 22.425 4.59 21.57 3.51 20.49C2.43 19.41 1.575 18.14 0.945 16.68C0.315 15.22 0 13.66 0 12C0 10.34 0.315 8.78 0.945 7.32C1.575 5.86 2.43 4.59 3.51 3.51C4.59 2.43 5.86 1.575 7.32 0.945C8.78 0.315 10.34 0 12 0C13.66 0 15.22 0.315 16.68 0.945C18.14 1.575 19.41 2.43 20.49 3.51C21.57 4.59 22.425 5.86 23.055 7.32C23.685 8.78 24 10.34 24 12C24 13.66 23.685 15.22 23.055 16.68C22.425 18.14 21.57 19.41 20.49 20.49C19.41 21.57 18.14 22.425 16.68 23.055C15.22 23.685 13.66 24 12 24ZM12 21.6C14.68 21.6 16.95 20.67 18.81 18.81C20.67 16.95 21.6 14.68 21.6 12C21.6 9.32 20.67 7.05 18.81 5.19C16.95 3.33 14.68 2.4 12 2.4C9.32 2.4 7.05 3.33 5.19 5.19C3.33 7.05 2.4 9.32 2.4 12C2.4 14.68 3.33 16.95 5.19 18.81C7.05 20.67 9.32 21.6 12 21.6Z" fill="#0A2540"/>
                     </g>
                 </svg>
-                Save score
+                <span class="save_score_label">Save score</span>
             </label>
         </div>
         <div class="custom_check">
-            <input type="checkbox" name="animations_label" id="animations_label" class="custom_checkbox">
-            <label for="animations_label" id="animations_label" class="custom_checkbox_label">
-                <svg class="custom_checkbox_img icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <input type="checkbox" name="animations_label" id="animations_label" class="animations_checkbox">
+            <label for="animations_label">
+                <svg class="animations_icon icon" width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <mask id="mask0_49_334" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
                         <rect width="24" height="24" fill="#D9D9D9"/>
                     </mask>
@@ -193,7 +193,7 @@
                         <path d="M12 24C10.34 24 8.78 23.685 7.32 23.055C5.86 22.425 4.59 21.57 3.51 20.49C2.43 19.41 1.575 18.14 0.945 16.68C0.315 15.22 0 13.66 0 12C0 10.34 0.315 8.78 0.945 7.32C1.575 5.86 2.43 4.59 3.51 3.51C4.59 2.43 5.86 1.575 7.32 0.945C8.78 0.315 10.34 0 12 0C13.66 0 15.22 0.315 16.68 0.945C18.14 1.575 19.41 2.43 20.49 3.51C21.57 4.59 22.425 5.86 23.055 7.32C23.685 8.78 24 10.34 24 12C24 13.66 23.685 15.22 23.055 16.68C22.425 18.14 21.57 19.41 20.49 20.49C19.41 21.57 18.14 22.425 16.68 23.055C15.22 23.685 13.66 24 12 24ZM12 21.6C14.68 21.6 16.95 20.67 18.81 18.81C20.67 16.95 21.6 14.68 21.6 12C21.6 9.32 20.67 7.05 18.81 5.19C16.95 3.33 14.68 2.4 12 2.4C9.32 2.4 7.05 3.33 5.19 5.19C3.33 7.05 2.4 9.32 2.4 12C2.4 14.68 3.33 16.95 5.19 18.81C7.05 20.67 9.32 21.6 12 21.6Z" fill="#0A2540"/>
                     </g>
                 </svg>
-                Animations
+                <span class="animations_label">Animations</span>
             </label>
         </div>
         <a href="">Privacy Policy</a>
