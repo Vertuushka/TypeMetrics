@@ -93,6 +93,7 @@ let color_scheme;
 let save_score;
 let animations;
 
+let text_wrapper;
 let language;
 let text_select;
 
@@ -137,6 +138,9 @@ class Custom_Checkbox {
             case "animations":
                 this.animations_onLoad();
             break;
+            case "save_score":
+                text_wrapper.change_stat_visibility(this.get_value);
+            break;
             default:
             break;
         }
@@ -148,6 +152,8 @@ class Custom_Checkbox {
             change_color_scheme(this.get_value);
         if(this.prefix == "animations")
             change_animations(this.get_value);
+        if (this.prefix == "save_score")
+            text_wrapper.change_stat_visibility(this.get_value);
     }
 
     toggle_icon() {
@@ -351,15 +357,6 @@ class Text {
     }
 }
 
-class Game_Controller {
-    constructor(start_btn, stop_btn) {
-        this.start_btn = document.querySelector(`.${start_btn}`);
-        this.stop_btn = document.querySelector(`.${stop_btn}`);
-
-        this.stop_btn.classList.add("hidden");
-    }
-}
-
 function update_text_options(lang) {
     text_select.remove_options();
     switch (lang) {
@@ -383,7 +380,71 @@ function update_text_options(lang) {
     }
 }
 
+class Game_Controller {
+    constructor(start_btn, stop_btn) {
+        this.start_btn = document.querySelector(`.${start_btn}`);
+        this.stop_btn = document.querySelector(`.${stop_btn}`);
+
+        this.stop_btn.classList.add("hidden");
+    }
+}
+
+class Text_Wrapper{
+    constructor() {
+        this.wrapper = document.querySelectorAll(".text_wrapper");
+        this.text_title = document.querySelectorAll(".text_title");
+        this.text_author = document.querySelectorAll(".text_author");
+        this.text_words = document.querySelectorAll(".text_words");
+        this.text_chars = document.querySelectorAll(".text_chars");
+
+        this.live_wpm = document.querySelector(".live_wpm");
+        this.live_nwpm = document.querySelector(".live_nwpm");
+        this.live_errors = document.querySelector(".live_errors");
+        this.live_accuracy = document.querySelector(".live_accuracy");
+
+        this.text_window = document.querySelector("#text_window");
+        this.input = document.querySelector("#overlay_input");
+
+        this.stat = document.querySelector(".text_stat");
+        this.best_wpm = document.querySelectorAll(".scoreboard_best_value")[0];
+        this.best_nwpm = document.querySelectorAll(".scoreboard_best_value")[1];
+        this.best_errors = document.querySelectorAll(".scoreboard_best_value")[2];
+        this.best_accuracy = document.querySelectorAll(".scoreboard_best_value")[3];
+
+        this.last_wpm = document.querySelectorAll(".scoreboard_last_value")[0];
+        this.last_nwpm = document.querySelectorAll(".scoreboard_last_value")[1];
+        this.last_errors = document.querySelectorAll(".scoreboard_last_value")[2];
+        this.last_accuracy = document.querySelectorAll(".scoreboard_last_value")[3];
+    }
+
+    get value(){
+        return this.wrapper[0].classList.contains("hidden");
+    }
+
+    set change_tab(value=null){
+        this.wrapper[0].classList.toggle("hidden");
+        this.wrapper[1].classList.toggle("hidden");
+
+        
+    }
+
+    change_stat_visibility(override=null) {
+        if (override != null) {
+            if (override == true) {
+                this.stat.classList.remove("hidden");
+            } else {
+                this.stat.classList.add("hidden");
+            }
+            return;
+        }
+        this.stat.classList.toggle("hidden");
+    }
+}
+
 function document_init() {
+
+    text_wrapper = new Text_Wrapper();
+
     ignore_casing = new Custom_Checkbox("ignore_casing", 
         svg_content["checkbox_checked"], 
         svg_content["checkbox_unchecked"],
