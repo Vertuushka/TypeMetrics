@@ -1,4 +1,5 @@
 import { local_strings } from "./localization.js"
+import { translate_page } from "./localization.js"
 
 const storage_keys = {
     "ignore_casing": "casing",
@@ -92,6 +93,8 @@ let color_scheme;
 let save_score;
 let animations;
 
+let language;
+
 
 // CLASSES
 class Custom_Checkbox {
@@ -166,8 +169,8 @@ class Custom_Checkbox {
     animations_onLoad() {
         if (this.get_value == null) {
            this.set_value = true;
-           change_animations(this.get_value);
         }
+        change_animations(this.get_value);
     }
 }
 
@@ -183,10 +186,126 @@ function change_color_scheme(is_night=false) {
     }
 }
 
-function change_animations(override=true) {
+function change_animations(override=null) {
+    if (override == true) {
+        document.querySelectorAll(".text_wrapper").forEach(el => {
+            el.classList.remove("paused");
+        })
+        return;
+    } 
+    if (override == false) {
+        document.querySelectorAll(".text_wrapper").forEach(el => {
+            el.classList.add("paused");
+        })
+        return;
+    }    
     document.querySelectorAll(".text_wrapper").forEach(el => {
         el.classList.toggle("paused");
     })
+}
+
+class Custom_Select {
+    constructor(prefix, storage_key=null) {
+        this.prefix = prefix;
+        this.select = document.querySelector(`.${prefix}_select`);
+        this.container = this.select.parentElement;
+        this.icon = document.querySelector(`.${prefix}_select_icon`);
+        this.label = document.querySelector(`.${prefix}_select_label`);
+        this.options = document.querySelector(`.${prefix}_options`);
+
+        if (storage_key != null)
+            this.storage_key = storage_key;
+        
+        this.container.addEventListener("click", this.toggle_options.bind(this));
+        document.addEventListener("click", this.toggle_options.bind(this));
+
+        this.on_load();
+    }
+
+    get value() {
+        if (this.prefix == "text") {
+            console.log("returns text object")
+        }
+        if (this.prefix == "language") {
+            return JSON.parse(localStorage.getItem(this.storage_key));
+        }
+    }
+
+    set update_value(value) {
+        if (this.prefix == "text") {
+            console.log("returns text object")
+        }
+        if (this.prefix == "language") {
+            switch (value) {
+                case local_strings.en["en_tooltip"]:
+                    value = "en";
+                break;
+                case local_strings.en["sv_tooltip"]:
+                    value = "sv";
+                break;
+                case local_strings.en["ru_tooltip"]:
+                    value = "ru"
+                break;
+                default:
+                break;
+            }
+            localStorage.setItem(this.storage_key, JSON.stringify(value));
+            this.update_icon();
+        }
+    }
+
+    setup_options() {
+        this.options_list = document.querySelectorAll(`.${this.prefix}_option`);
+        this.options_list.forEach(option => {
+            option.addEventListener("click", this.select_option.bind(this));
+        })
+    }
+
+    on_load() {
+        this.setup_options();
+        if (this.prefix == "text") {
+        }
+        if (this.prefix == "language") {
+            if (this.value == null) {
+                if (navigator.language in lang) 
+                    this.update_value = navigator.language;
+                else
+                    this.update_value = "en";
+            } else {
+                this.label.innerHTML = lang[this.value]; 
+            }
+            translate_page(this.value);
+            this.update_icon();
+        }
+    }
+
+    select_option() {
+        if (this.prefix == "language") {
+            this.update_value = event.target.innerHTML;
+            this.label.innerHTML = lang[this.value];
+            translate_page(this.value);
+        }
+    }
+
+    toggle_options() {
+        if (!this.container.contains(event.target)) {
+            this.options.classList.add("hidden"); 
+        } else {
+            event.stopPropagation();
+            this.options.classList.toggle("hidden");
+        }
+    }
+
+    update_icon() {
+        if (this.prefix != "language") {
+            if(this.options.classList.contains("hidden")) 
+                this.icon.style.transform = "rotate(0deg)";
+            else
+                this.icon.style.transform = "rotate(180deg)";
+        } else 
+            this.icon.innerHTML = svg_content[this.value];
+    }
+        
 }
 
 function document_init() {
@@ -212,6 +331,8 @@ function document_init() {
         svg_content["checkbox_unchecked"],
         storage_keys["animations"]
     )
+
+    language = new Custom_Select("language", storage_keys["language"]);
 }
 
 document.addEventListener("DOMContentLoaded", document_init)
