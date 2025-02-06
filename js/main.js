@@ -103,6 +103,8 @@ let texts_sv = [];
 let texts_en = [];
 let texts_ru = [];
 
+let selected_text;
+
 // CLASSES
 class Custom_Checkbox {
     constructor(prefix, checked_icon, unchecked_icon, storage_key) {
@@ -139,6 +141,8 @@ class Custom_Checkbox {
                 this.animations_onLoad();
             break;
             case "save_score":
+                if (this.get_value == null) 
+                    this.set_value = true;
                 text_wrapper.change_stat_visibility(this.get_value);
             break;
             default:
@@ -184,6 +188,7 @@ class Custom_Checkbox {
         }
         change_animations(this.get_value);
     }
+
 }
 
 function change_color_scheme(is_night=false) {
@@ -275,20 +280,23 @@ class Custom_Select {
         if (this.prefix == "text") {
             this.update_value = this.options_list[0].innerHTML;
             this.label.innerHTML = this.value;
+            selected_text = get_text(this.value);
+            text_wrapper.update_text_info();
         }
     }
 
     on_load() {
-        this.setup_options();
         if (this.prefix == "text") {
+            // this.setup_options();
         }
         if (this.prefix == "language") {
+            this.setup_options();
             if (this.value == null) {
                 if (navigator.language in lang) 
                     this.update_value = navigator.language;
                 else
                     this.update_value = "en";
-            } else {
+
                 this.label.innerHTML = lang[this.value]; 
             }
             translate_page(this.value);
@@ -303,6 +311,8 @@ class Custom_Select {
             translate_page(this.value);
             update_text_options(this.value);
         } else {
+            selected_text = get_text(event.target.innerHTML);
+            text_wrapper.update_text_info();
             this.update_value = event.target.innerHTML;
             this.label.innerHTML = this.value;
         }
@@ -359,25 +369,9 @@ class Text {
 
 function update_text_options(lang) {
     text_select.remove_options();
-    switch (lang) {
-        case "sv":
-            for(let i=0; i < texts_sv.length; i++) {
-                text_select.add_option(texts_sv[i].title);
-            }
-        break;
-        case "en":
-            for(let i=0; i < texts_en.length; i++) {
-                text_select.add_option(texts_en[i].title);
-            }
-        break;
-        case "ru":
-            for(let i=0; i < texts_ru.length; i++) {
-                text_select.add_option(texts_ru[i].title);
-            }
-        break;
-        default:
-        break;
-    }
+    let texts = get_lang_texts(lang);
+    for(let i=0; i < texts.length; i++) 
+        text_select.add_option(texts[i].title);
 }
 
 class Game_Controller {
@@ -439,9 +433,39 @@ class Text_Wrapper{
         }
         this.stat.classList.toggle("hidden");
     }
+
+    update_text_info() {
+        this.text_title.forEach(element => {element.innerHTML = selected_text.title});
+        this.text_author.forEach(element => {element.innerHTML = selected_text.author});
+        this.text_words.forEach(element => {element.innerHTML = selected_text.words});
+        this.text_chars.forEach(element => {element.innerHTML = selected_text.characters});
+    }
+}
+
+function get_lang_texts(lang) {
+    switch (lang) {
+        case "sv":
+            return texts_sv;
+        break;
+        case "en":
+            return texts_en;
+        break;
+        case "ru":
+            return texts_ru;
+        break;
+        default:
+        break;
+    }
+}
+
+function get_text(title){
+    let texts = get_lang_texts(language.value);
+    return Object.values(texts).find(text => text.title === title);
 }
 
 function document_init() {
+    
+    language = new Custom_Select("language", storage_keys["language"]);
 
     text_wrapper = new Text_Wrapper();
 
@@ -467,8 +491,7 @@ function document_init() {
         svg_content["checkbox_unchecked"],
         storage_keys["animations"]
     )
-
-    language = new Custom_Select("language", storage_keys["language"]);
+    
     text_select = new Custom_Select("text");
     update_text_options(language.value);
 
