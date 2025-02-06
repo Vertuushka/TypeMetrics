@@ -117,7 +117,8 @@ class Custom_Checkbox {
         this.unchecked_icon = unchecked_icon;
         this.storage_key = storage_key;
 
-        this.checkbox.addEventListener("change", this.on_click.bind(this));
+        this.handler = this.on_click.bind(this);
+        this.checkbox.addEventListener("change", this.handler);
         this.set_value = this.get_value;
         this.on_load();
     }
@@ -190,11 +191,15 @@ class Custom_Checkbox {
     }
 
     disable() {
-        this.checkbox.removeEventListener("change", this.on_click.bind(this));
+        this.icon.classList.add("disabled");
+        this.label.classList.add("disabled");
+        this.checkbox.removeEventListener("change", this.handler);
     }
 
     enable() {
-        this.checkbox.addEventListener("change", this.on_click.bind(this));
+        this.icon.classList.remove("disabled");
+        this.label.classList.remove("disabled");
+        this.checkbox.addEventListener("change", this.handler);
     }
 
 }
@@ -241,9 +246,10 @@ class Custom_Select {
 
         if (storage_key != null)
             this.storage_key = storage_key;
-        
-        this.container.addEventListener("click", this.toggle_options.bind(this));
-        document.addEventListener("click", this.toggle_options.bind(this));
+
+        this.click_handler = this.toggle_options.bind(this);
+        this.container.addEventListener("click", this.click_handler);
+        document.addEventListener("click", this.click_handler);
 
         this.on_load();
     }
@@ -303,10 +309,9 @@ class Custom_Select {
                 if (navigator.language in lang) 
                     this.update_value = navigator.language;
                 else
-                    this.update_value = "en";
-
-                this.label.innerHTML = lang[this.value]; 
+                    this.update_value = "en";  
             }
+            this.label.innerHTML = lang[this.value];
             translate_page(this.value);
             this.update_icon();
         }
@@ -328,11 +333,12 @@ class Custom_Select {
 
     toggle_options() {
         if (!this.container.contains(event.target)) {
-            this.options.classList.add("hidden"); 
+            this.options.classList.add("hidden");
         } else {
             event.stopPropagation();
             this.options.classList.toggle("hidden");
         }
+        this.update_icon();
     }
 
     update_icon() {
@@ -353,6 +359,20 @@ class Custom_Select {
         let new_option = create_option(this.prefix, label);
         this.options.appendChild(new_option);
         this.setup_options();
+    }
+
+    disable() {
+        this.icon.classList.add("disabled");
+        this.label.classList.add("disabled");
+        this.container.removeEventListener("click", this.click_handler);
+        document.removeEventListener("click", this.click_handler);
+    }
+
+    enable() {
+        this.icon.classList.remove("disabled");
+        this.label.classList.remove("disabled");
+        this.container.addEventListener("click", this.click_handler);
+        document.addEventListener("click", this.click_handler);
     }
 }
 
@@ -388,6 +408,19 @@ class Game_Controller {
         this.stop_btn = document.querySelector(`.${stop_btn}`);
 
         this.stop_btn.classList.add("hidden");
+
+        this.start_btn.addEventListener("click", this.start_game.bind(this));
+    }
+
+    start_game() {
+        text_wrapper.change_tab();
+        ignore_casing.disable();
+        text_select.disable();
+        save_score.disable();
+        language.disable();
+
+        text_wrapper.text_constructor();
+
     }
 }
 
@@ -417,13 +450,16 @@ class Text_Wrapper{
         this.last_nwpm = document.querySelectorAll(".scoreboard_last_value")[1];
         this.last_errors = document.querySelectorAll(".scoreboard_last_value")[2];
         this.last_accuracy = document.querySelectorAll(".scoreboard_last_value")[3];
+
+        this.wrapped_text = [];
+        this.current_char = 0;
     }
 
     get value(){
         return this.wrapper[0].classList.contains("hidden");
     }
 
-    change_tab(value){
+    change_tab(){
         this.wrapper[0].classList.toggle("hidden");
         this.wrapper[1].classList.toggle("hidden");
     }
@@ -467,6 +503,21 @@ class Text_Wrapper{
             localStorage.setItem(selected_text.title, JSON.stringify(data));
         }
     }
+
+    text_constructor() {
+        for (let i=0; i < selected_text.text.length; i++) {
+            let wrapped_char = create_span(selected_text.text[i]);
+            this.wrapped_text.push(wrapped_char);
+            this.text_window.appendChild(wrapped_char);
+        }
+        this.wrapped_text[0].classList.add("current_symbol");
+    }
+}
+
+function create_span(content) {
+    let span = document.createElement("span");
+    span.innerHTML = content;
+    return span;
 }
 
 function get_lang_texts(lang) {

@@ -327,3 +327,20 @@ footer {
     display: flex;
     gap: 4px;
 }
+
+.disabled {
+    color: var(--inactive);
+}
+
+.disabled path {
+    fill: var(--inactive);
+}
+
+.rotate {
+    transform: rotate(180deg);
+}
+
+.current_symbol {
+    background-color: var(--dark);
+    color: var(--light);
+}
