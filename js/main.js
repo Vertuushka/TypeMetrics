@@ -189,6 +189,14 @@ class Custom_Checkbox {
         change_animations(this.get_value);
     }
 
+    disable() {
+        this.checkbox.removeEventListener("change", this.on_click.bind(this));
+    }
+
+    enable() {
+        this.checkbox.addEventListener("change", this.on_click.bind(this));
+    }
+
 }
 
 function change_color_scheme(is_night=false) {
@@ -415,11 +423,9 @@ class Text_Wrapper{
         return this.wrapper[0].classList.contains("hidden");
     }
 
-    set change_tab(value=null){
+    change_tab(value){
         this.wrapper[0].classList.toggle("hidden");
         this.wrapper[1].classList.toggle("hidden");
-
-        
     }
 
     change_stat_visibility(override=null) {
@@ -439,6 +445,27 @@ class Text_Wrapper{
         this.text_author.forEach(element => {element.innerHTML = selected_text.author});
         this.text_words.forEach(element => {element.innerHTML = selected_text.words});
         this.text_chars.forEach(element => {element.innerHTML = selected_text.characters});
+
+        if (save_score.get_value == true) {
+            let statistics = JSON.parse(localStorage.getItem(selected_text.title));
+            if (statistics != null) {
+                this.best_wpm.innerHTML = statistics["best_wpm"];
+                this.best_nwpm.innerHTML = statistics["best_nwpm"];
+                this.best_errors.innerHTML = statistics["best_errors"];
+                this.best_accuracy.innerHTML = statistics["best_accuracy"];
+    
+                this.last_wpm.innerHTML = statistics["last_wpm"];
+                this.last_nwpm.innerHTML = statistics["last_nwpm"];
+                this.last_errors.innerHTML = statistics["last_errors"];
+                this.last_accuracy.innerHTML = statistics["last_accuracy"];
+            }
+        }
+    }
+
+    save_stat(data) {
+        if (save_score.get_value == true) {
+            localStorage.setItem(selected_text.title, JSON.stringify(data));
+        }
     }
 }
 
