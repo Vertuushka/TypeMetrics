@@ -94,7 +94,13 @@ let save_score;
 let animations;
 
 let language;
+let text_select;
 
+let game_controller;
+
+let texts_sv = [];
+let texts_en = [];
+let texts_ru = [];
 
 // CLASSES
 class Custom_Checkbox {
@@ -212,6 +218,7 @@ class Custom_Select {
         this.icon = document.querySelector(`.${prefix}_select_icon`);
         this.label = document.querySelector(`.${prefix}_select_label`);
         this.options = document.querySelector(`.${prefix}_options`);
+        this.text;
 
         if (storage_key != null)
             this.storage_key = storage_key;
@@ -224,7 +231,7 @@ class Custom_Select {
 
     get value() {
         if (this.prefix == "text") {
-            console.log("returns text object")
+            return this.text;
         }
         if (this.prefix == "language") {
             return JSON.parse(localStorage.getItem(this.storage_key));
@@ -233,7 +240,7 @@ class Custom_Select {
 
     set update_value(value) {
         if (this.prefix == "text") {
-            console.log("returns text object")
+            this.text = value;
         }
         if (this.prefix == "language") {
             switch (value) {
@@ -259,6 +266,10 @@ class Custom_Select {
         this.options_list.forEach(option => {
             option.addEventListener("click", this.select_option.bind(this));
         })
+        if (this.prefix == "text") {
+            this.update_value = this.options_list[0].innerHTML;
+            this.label.innerHTML = this.value;
+        }
     }
 
     on_load() {
@@ -284,6 +295,10 @@ class Custom_Select {
             this.update_value = event.target.innerHTML;
             this.label.innerHTML = lang[this.value];
             translate_page(this.value);
+            update_text_options(this.value);
+        } else {
+            this.update_value = event.target.innerHTML;
+            this.label.innerHTML = this.value;
         }
     }
 
@@ -305,7 +320,67 @@ class Custom_Select {
         } else 
             this.icon.innerHTML = svg_content[this.value];
     }
-        
+
+    remove_options() {
+        this.options.innerHTML = "";
+    }
+
+    add_option(label) {
+        let new_option = create_option(this.prefix, label);
+        this.options.appendChild(new_option);
+        this.setup_options();
+    }
+}
+
+function create_option(class_prefix, label) {
+    let new_option = document.createElement("p");
+    new_option.classList.add(`${class_prefix}_option`);
+    new_option.classList.add(`option`);
+    new_option.innerHTML = label;
+    return new_option;
+}
+
+class Text {
+    constructor(title, author, text) {
+        this.title = title;
+        this.author = author;
+        this.text = text;
+
+        this.words = text.trim().split(" ").length;
+        this.characters = text.length;
+    }
+}
+
+class Game_Controller {
+    constructor(start_btn, stop_btn) {
+        this.start_btn = document.querySelector(`.${start_btn}`);
+        this.stop_btn = document.querySelector(`.${stop_btn}`);
+
+        this.stop_btn.classList.add("hidden");
+    }
+}
+
+function update_text_options(lang) {
+    text_select.remove_options();
+    switch (lang) {
+        case "sv":
+            for(let i=0; i < texts_sv.length; i++) {
+                text_select.add_option(texts_sv[i].title);
+            }
+        break;
+        case "en":
+            for(let i=0; i < texts_en.length; i++) {
+                text_select.add_option(texts_en[i].title);
+            }
+        break;
+        case "ru":
+            for(let i=0; i < texts_ru.length; i++) {
+                text_select.add_option(texts_ru[i].title);
+            }
+        break;
+        default:
+        break;
+    }
 }
 
 function document_init() {
@@ -333,6 +408,50 @@ function document_init() {
     )
 
     language = new Custom_Select("language", storage_keys["language"]);
+    text_select = new Custom_Select("text");
+    update_text_options(language.value);
+
+    game_controller = new Game_Controller("control_button", "stop_button");
 }
 
-document.addEventListener("DOMContentLoaded", document_init)
+function parse_xml() {
+
+    let doc = this.responseXML;
+    let title_elements = doc.getElementsByTagName("title");
+    let author_elements = doc.getElementsByTagName("author");
+    let language_elements = doc.getElementsByTagName("language");
+    let text_elements = doc.getElementsByTagName("text");
+
+    for(let i = 0; i < title_elements.length; i++) {
+        switch(language_elements[i].innerHTML) {
+            case "sv":
+                texts_sv.push(new Text(title_elements[i].innerHTML, 
+                                       author_elements[i].innerHTML, 
+                                       text_elements[i].innerHTML))
+            break;
+            case "en":
+                texts_en.push(new Text(title_elements[i].innerHTML, 
+                    author_elements[i].innerHTML, 
+                    text_elements[i].innerHTML))
+            break;
+            case "ru":
+                texts_ru.push(new Text(title_elements[i].innerHTML, 
+                    author_elements[i].innerHTML, 
+                    text_elements[i].innerHTML))
+            break;
+            default:
+            break;
+        }
+    }
+    document_init();
+}
+
+function text_request() {
+    let req = new XMLHttpRequest();
+    req.addEventListener("load", parse_xml);
+
+    req.open("GET", "texts.xml");
+    req.send();
+}
+
+document.addEventListener("DOMContentLoaded", text_request)

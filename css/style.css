@@ -121,7 +121,7 @@ main {
 }
 
 .control_button {
-    font-family: 'Poppins';
+    font-family: 'Poppins', sans-serif;
     padding: 16px 32px;
     background-color: #4C9AFF;
     color: #ffffff;
@@ -130,6 +130,7 @@ main {
     outline: none;
     border-radius: 16px;
     box-shadow: 0px 2px 8px 0px var(--shadow);
+    cursor: pointer;
 }
 
 .text_wrapper {
@@ -320,4 +321,9 @@ footer {
     border: none;
     outline: none;
     z-index: -1;
+}
+
+.row {
+    display: flex;
+    gap: 4px;
 }
