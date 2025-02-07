@@ -86,6 +86,8 @@ const document_colors = {
     }
 }
 
+const ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyzöäåABCDEFGHIJKLMNOPQRSTUVWXYZÖÄÅАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя.,!;:\"-' ";
+
 // GLOBAL OBJECTS
 
 let ignore_casing;
@@ -104,6 +106,10 @@ let texts_en = [];
 let texts_ru = [];
 
 let selected_text;
+
+function toggle_class(element, class_name) {
+    element.classList.toggle(class_name);
+}
 
 // CLASSES
 class Custom_Checkbox {
@@ -266,6 +272,9 @@ class Custom_Select {
     set update_value(value) {
         if (this.prefix == "text") {
             this.text = value;
+            if (text_wrapper.value == false) {
+                text_wrapper.preview_tab();
+            }
         }
         if (this.prefix == "language") {
             switch (value) {
@@ -362,7 +371,9 @@ class Custom_Select {
     }
 
     disable() {
-        this.icon.classList.add("disabled");
+        if (this.prefix != "language") {
+            this.icon.classList.add("disabled");
+        }
         this.label.classList.add("disabled");
         this.container.removeEventListener("click", this.click_handler);
         document.removeEventListener("click", this.click_handler);
@@ -408,12 +419,15 @@ class Game_Controller {
         this.stop_btn = document.querySelector(`.${stop_btn}`);
 
         this.stop_btn.classList.add("hidden");
-
         this.start_btn.addEventListener("click", this.start_game.bind(this));
+        this.stop_btn.addEventListener("click", this.stop_game.bind(this));
+
+        this.started = false;
     }
 
     start_game() {
-        text_wrapper.change_tab();
+        this.started = true;
+        text_wrapper.play_tab();
         ignore_casing.disable();
         text_select.disable();
         save_score.disable();
@@ -421,6 +435,20 @@ class Game_Controller {
 
         text_wrapper.text_constructor();
 
+        this.start_btn.classList.add("hidden");
+        this.stop_btn.classList.remove("hidden");
+    }
+
+    stop_game() {
+        this.started = false;
+        // text_wrapper.change_tab();
+        ignore_casing.enable();
+        text_select.enable();
+        save_score.enable();
+        language.enable();
+
+        this.start_btn.classList.remove("hidden");
+        this.stop_btn.classList.add("hidden");
     }
 }
 
@@ -453,15 +481,22 @@ class Text_Wrapper{
 
         this.wrapped_text = [];
         this.current_char = 0;
+
+        this.wrapper[0].addEventListener("animationend", this.remove_wrong_shadow.bind(this))
     }
 
     get value(){
         return this.wrapper[0].classList.contains("hidden");
     }
 
-    change_tab(){
-        this.wrapper[0].classList.toggle("hidden");
-        this.wrapper[1].classList.toggle("hidden");
+    play_tab() {
+        this.wrapper[0].classList.remove("hidden");
+        this.wrapper[1].classList.add("hidden");
+    }
+
+    preview_tab() {
+        this.wrapper[0].classList.add("hidden");
+        this.wrapper[1].classList.remove("hidden");
     }
 
     change_stat_visibility(override=null) {
@@ -505,13 +540,74 @@ class Text_Wrapper{
     }
 
     text_constructor() {
+        this.wrapped_text = [];
+        this.current_char = 0;
+        this.text_window.innerHTML = `<input type="text" name="" id="overlay_input">`;
+        this.input = document.querySelector("#overlay_input");
+        this.input.addEventListener("keydown", spelling_check)
         for (let i=0; i < selected_text.text.length; i++) {
             let wrapped_char = create_span(selected_text.text[i]);
             this.wrapped_text.push(wrapped_char);
             this.text_window.appendChild(wrapped_char);
         }
         this.wrapped_text[0].classList.add("current_symbol");
+        this.enable_input();
+        this.text_window.addEventListener("click", this.enable_input.bind(this));
     }
+
+    enable_input() {
+        this.input.focus();
+    }
+
+    remove_wrong_shadow() {
+        this.wrapper[0].classList.remove("wrong_input");
+    }
+}
+
+function spelling_check(event) {
+    if(game_controller.started == false) {
+        return;
+    }
+
+    if(ALLOWED_CHARS.includes(event.key))
+        {
+            
+            
+            let user_input = event.key;
+            let char_to_compare = selected_text.text[text_wrapper.current_char];
+            console.log(char_to_compare);
+    
+            if(ignore_casing.get_value == true) {
+                user_input = user_input.toLowerCase();
+                char_to_compare = char_to_compare.toLowerCase();
+            }
+    
+            if(user_input == char_to_compare){
+                toggle_class(text_wrapper.wrapped_text[text_wrapper.current_char], "right_symbol")
+            } else { 
+                if(animations.get_value == true) {
+                    text_wrapper.wrapper[0].classList.remove("wrong_input");
+                    requestAnimationFrame(() => {
+                        text_wrapper.wrapper[0].classList.add("wrong_input");
+                    })
+                }
+                if (char_to_compare == ' ')
+                    toggle_class(text_wrapper.wrapped_text[text_wrapper.current_char], "wrong_space")
+                else
+                    toggle_class(text_wrapper.wrapped_text[text_wrapper.current_char], "wrong_symbol")
+            }
+    
+            // update_stat(user_input == char_to_compare);
+    
+            if (text_wrapper.current_char == selected_text.text.length-1) {
+                // toggle_game_state();
+                return;
+            }
+    
+            text_wrapper.current_char++;
+    
+            toggle_class(text_wrapper.wrapped_text[text_wrapper.current_char], "current_symbol");
+        }        
 }
 
 function create_span(content) {
