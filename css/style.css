@@ -69,7 +69,7 @@ html {
 
 body {
     height: 100vh;
-    max-width: 1024px;
+    max-width: fit-content;
     margin: 0 auto;
     padding: var(--space_64);
 
@@ -88,6 +88,7 @@ main {
     justify-content: center;
     flex: 1;
     width: 100%;
+    max-width: 1024px;
 }
 
 .text_controls {
@@ -213,7 +214,7 @@ main {
 .text_details {
     width: 100%;
     display: flex;
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
     justify-content: space-between;
     justify-content: center;
     align-content: center;
