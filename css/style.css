@@ -181,7 +181,6 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 2px;
 }
 
 .stat_start {
@@ -198,7 +197,6 @@ main {
 
 .stat_end {
     border-radius: 0px 16px 16px 0px;
-    width: 100%;
 }
 
 .text_details {
@@ -231,8 +229,7 @@ main {
 }
 
 .text_stat_best, .text_stat_last {
-    display: grid;
-    grid-template-columns: repeat(5, auto);
+    display: flex;
 }
 
 .stop_button {
