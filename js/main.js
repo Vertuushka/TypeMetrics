@@ -101,6 +101,8 @@ let text_select;
 
 let game_controller;
 
+let statistics;
+
 let texts_sv = [];
 let texts_en = [];
 let texts_ru = [];
@@ -163,8 +165,11 @@ class Custom_Checkbox {
             change_color_scheme(this.get_value);
         if(this.prefix == "animations")
             change_animations(this.get_value);
-        if (this.prefix == "save_score")
+        if (this.prefix == "save_score") {
             text_wrapper.change_stat_visibility(this.get_value);
+            text_wrapper.update_text_info();
+        }
+
     }
 
     toggle_icon() {
@@ -426,6 +431,7 @@ class Game_Controller {
     }
 
     start_game() {
+        statistics.reset();
         this.started = true;
         text_wrapper.play_tab();
         ignore_casing.disable();
@@ -437,6 +443,8 @@ class Game_Controller {
 
         this.start_btn.classList.add("hidden");
         this.stop_btn.classList.remove("hidden");
+
+        statistics.start_timestamp = Date.now();
     }
 
     stop_game() {
@@ -449,6 +457,10 @@ class Game_Controller {
 
         this.start_btn.classList.remove("hidden");
         this.stop_btn.classList.add("hidden");
+        this.start_timestamp = 0;
+
+        if(save_score.get_value == true)
+            statistics.update_storage();
     }
 }
 
@@ -529,6 +541,16 @@ class Text_Wrapper{
                 this.last_nwpm.innerHTML = statistics["last_nwpm"];
                 this.last_errors.innerHTML = statistics["last_errors"];
                 this.last_accuracy.innerHTML = statistics["last_accuracy"];
+            } else {
+                this.best_wpm.innerHTML = 0;
+                this.best_nwpm.innerHTML = 0;
+                this.best_errors.innerHTML = 0;
+                this.best_accuracy.innerHTML = 0;
+    
+                this.last_wpm.innerHTML = 0;
+                this.last_nwpm.innerHTML = 0;
+                this.last_errors.innerHTML = 0;
+                this.last_accuracy.innerHTML = 0;
             }
         }
     }
@@ -562,6 +584,85 @@ class Text_Wrapper{
     remove_wrong_shadow() {
         this.wrapper[0].classList.remove("wrong_input");
     }
+
+    stat_live(stat) {
+        this.live_wpm.innerHTML = stat.wpm;
+        this.live_nwpm.innerHTML = stat.nwpm;
+        this.live_errors.innerHTML = stat.errors;
+        this.live_accuracy.innerHTML = stat.accuracy;
+    }
+}
+
+class Statistics {
+    constructor() {
+        this.wpm = 0;
+        this.nwpm = 0;
+        this.errors = 0;
+        this.accuracy = 0;
+        this.start_timestamp = 0;
+        this.current_timestamp = 0;
+    }
+
+    register_game_start(){
+        this.start_timestamp = Date.now();
+    }
+
+    reset() {
+        this.wpm = 0;
+        this.nwpm = 0;
+        this.errors = 0;
+        this.accuracy = 0;
+        this.start_timestamp = 0;
+        this.current_timestamp = 0;
+    }
+
+    update(is_correct) {
+        this.current_timestamp = Date.now();
+        if (is_correct == false)
+            this.errors++;
+
+        this.accuracy = Math.round(100-this.errors/(text_wrapper.current_char+1)*100);
+        let time_elapsed = (this.current_timestamp - this.start_timestamp) / (1000 * 60);
+        this.wpm = Math.round(((text_wrapper.current_char+1)/5) / time_elapsed);
+        this.nwpm = Math.round(this.wpm - (this.errors / time_elapsed));
+
+        if (this.nwpm < 0)
+            this.nwpm = 0;
+
+        text_wrapper.stat_live(this);
+    }
+
+    update_storage() {
+        let stat = JSON.parse(localStorage.getItem(selected_text.title));
+        if (stat == null) {
+            localStorage.setItem(selected_text.title, "{}");
+            stat = JSON.parse(localStorage.getItem(selected_text.title));
+        }
+        let data = {
+            "last_wpm": this.wpm,
+            "last_nwpm": this.nwpm,
+            "last_errors": this.errors,
+            "last_accuracy": this.accuracy,
+            "best_wpm": stat.best_wpm,
+            "best_nwpm": stat.best_nwpm,
+            "best_errors": stat.best_errors,
+            "best_accuracy": stat.best_accuracy,
+        }
+        if(this.wpm > parseInt(stat["best_wpm"]) || stat["best_wpm"] == undefined) {
+            data["best_wpm"] = this.wpm;
+        }
+        if(this.nwpm > parseInt(stat["best_nwpm"]) || stat["best_nwpm"] == undefined) {
+            data["best_nwpm"] = this.nwpm;
+        }
+        if(this.errors < parseInt(stat["best_errors"]) || stat["best_errors"] == undefined) {
+            data["best_errors"] = this.errors;
+        }
+        if(this.accuracy > parseInt(stat["best_accuracy"]) || stat["best_accuracy"] == undefined) {
+            data["best_accuracy"] = this.accuracy;
+        }
+        let str = JSON.stringify(data);
+        localStorage.setItem(selected_text.title, str);
+    }
 }
 
 function spelling_check(event) {
@@ -571,11 +672,8 @@ function spelling_check(event) {
 
     if(ALLOWED_CHARS.includes(event.key))
         {
-            
-            
             let user_input = event.key;
             let char_to_compare = selected_text.text[text_wrapper.current_char];
-            console.log(char_to_compare);
     
             if(ignore_casing.get_value == true) {
                 user_input = user_input.toLowerCase();
@@ -597,10 +695,10 @@ function spelling_check(event) {
                     toggle_class(text_wrapper.wrapped_text[text_wrapper.current_char], "wrong_symbol")
             }
     
-            // update_stat(user_input == char_to_compare);
+            statistics.update(user_input == char_to_compare);
     
             if (text_wrapper.current_char == selected_text.text.length-1) {
-                // toggle_game_state();
+                game_controller.stop_game();
                 return;
             }
     
@@ -642,6 +740,8 @@ function document_init() {
     language = new Custom_Select("language", storage_keys["language"]);
 
     text_wrapper = new Text_Wrapper();
+
+    statistics = new Statistics();
 
     ignore_casing = new Custom_Checkbox("ignore_casing", 
         svg_content["checkbox_checked"], 

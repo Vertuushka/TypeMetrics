@@ -129,9 +129,9 @@ main {
     right: -2px;
     bottom: -2px;
     z-index: -1;
-    background: linear-gradient(var(--rotate), #4C9AFF, #2ECC71, #E74C3C, #F39C12, #E74C3C, #2ECC71, #4C9AFF);
+    background: var(--red);
     border-radius: 32px;
-    animation: error_shadow 0.5s linear, rotate_gradient 5s linear infinite;
+    animation: error_shadow 0.5s linear;
 
 }
 
@@ -198,6 +198,7 @@ main {
 
 .stat_end {
     border-radius: 0px 16px 16px 0px;
+    width: 100%;
 }
 
 .text_details {
@@ -230,8 +231,8 @@ main {
 }
 
 .text_stat_best, .text_stat_last {
-    display: flex;
-    gap: 2px;
+    display: grid;
+    grid-template-columns: repeat(5, auto);
 }
 
 .stop_button {
