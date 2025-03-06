@@ -1,4 +1,4 @@
-# TypeMetrics
+# [TypeMetrics](https://vertuushka.github.io/TypeMetrics/)
 
 ### 🖋️ Typing Speed Tester
 
