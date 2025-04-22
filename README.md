@@ -22,6 +22,7 @@ Statistics: words per minute (WPM), accuracy, typo counter.
 
 ### 🚀 Future Enhancements
 
+- Refactoring to ensure maintainability and scalability using SOLID principles
 - Phone version
 - Simplifying the integration of new languages
 
